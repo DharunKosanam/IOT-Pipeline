@@ -1,14 +1,17 @@
-# Use the official Python image from the Docker Hub
-FROM python:3.10-slim
+# Use an official lightweight Python image
+FROM python:3.9-slim
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Copy the requirements file first to leverage Docker layer caching
+COPY requirements.txt .
 
-# Install any dependencies if requirements.txt exists
-RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
+# Install the dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run thermostat.py when the container launches
-CMD ["python", "thermostat.py"]
+# Copy the rest of the application code
+COPY thermostat.py .
+
+# Command to run when the container starts
+CMD ["python", "-u", "thermostat.py"]
